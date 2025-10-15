@@ -1,0 +1,140 @@
+/* Glossary Term Styling */
+.glossary-term {
+    color: #2271b1;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-decoration-thickness: 2px;
+    cursor: help;
+    position: relative;
+    transition: color 0.2s ease;
+}
+
+.glossary-term:hover {
+    color: #135e96;
+    text-decoration-color: #135e96;
+}
+
+/* Tooltip Container */
+.glossary-tooltip {
+    position: absolute;
+    z-index: 999999;
+    max-width: 350px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    pointer-events: none;
+}
+
+.glossary-tooltip.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.glossary-tooltip.loading {
+    opacity: 0.6;
+}
+
+/* Tooltip Inner */
+.glossary-tooltip-inner {
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    position: relative;
+}
+
+
+/* Tooltip Content */
+.glossary-tooltip-title {
+    font-weight: 600;
+    font-size: 16px;
+    color: #1e1e1e;
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.glossary-tooltip-content {
+    font-size: 14px;
+    color: #4a4a4a;
+    line-height: 1.6;
+    margin-bottom: 12px;
+}
+
+.glossary-tooltip-link {
+    display: inline-block;
+    font-size: 13px;
+    color: #2271b1;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.glossary-tooltip-link:hover {
+    color: #135e96;
+    text-decoration: underline;
+}
+
+/* Loading State */
+.glossary-tooltip-loader {
+    text-align: center;
+    padding: 8px 0;
+    color: #666;
+    font-size: 14px;
+}
+.glossary-settings-info {
+    max-width: 800px;
+}
+.glossary-settings-info .card {
+    padding: 15px;
+    margin: 15px 0;
+}
+.glossary-settings-info code {
+    background: #f0f0f1;
+    padding: 3px 6px;
+    border-radius: 3px;
+    font-size: 13px;
+}
+.glossary-settings-info ul {
+    margin-left: 20px;
+}
+.glossary-settings-info ul li {
+    margin: 5px 0;
+}
+.glossary-term-modal {
+    max-width: 600px;
+}
+
+.glossary-term-modal .components-modal__content {
+    padding-bottom: 20px;
+}
+
+.glossary-term-modal .components-search-control {
+    margin-bottom: 0;
+}
+/* Responsive */
+@media (max-width: 768px) {
+    .glossary-tooltip {
+        max-width: 280px;
+    }
+    
+    .glossary-tooltip-inner {
+        padding: 12px;
+    }
+    
+    .glossary-tooltip-title {
+        font-size: 15px;
+    }
+    
+    .glossary-tooltip-content {
+        font-size: 13px;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .glossary-tooltip {
+        display: none;
+    }
+}
