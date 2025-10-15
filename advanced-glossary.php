@@ -105,7 +105,7 @@ class Advanced_Glossary {
             'publicly_queryable'    => false,  
             'show_in_menu'          => false,
             'show_in_rest'          => true,
-            'menu_icon'             => 'dashicons-book',
+            'menu_icon'             => 'dashicons-testimonial',
             'supports'              => array('title'),
             'rewrite'               => array('slug' => 'glossary'),
         );
@@ -337,15 +337,16 @@ class Advanced_Glossary {
     /**
      * Add Admin Menu
      */
+
     public function add_admin_menu() {
-        // Main menu pointing directly to glossary terms
+           
         add_menu_page(
             'Glossary',
             'Glossary',
             'manage_options',
             'edit.php?post_type=glossary',
             '',
-            'dashicons-book',
+            'dashicons-testimonial', // Use your custom SVG icon
             30
         );
         
