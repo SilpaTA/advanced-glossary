@@ -113,6 +113,7 @@
 .glossary-term-modal .components-search-control {
     margin-bottom: 0;
 }
+
 /* Responsive */
 @media (max-width: 768px) {
     .glossary-tooltip {

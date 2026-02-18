@@ -1,0 +1,24 @@
+.glossary-highlight {
+    color: #2271b1;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-decoration-thickness: 2px;
+    cursor: help;
+    position: relative;
+    transition: color 0.2s ease;
+}
+/* TinyMCE Glossary Button Icon */
+.mce-i-dashicons-book-alt:before,
+i.mce-i-dashicons-book-alt:before {
+    content: '\f473' !important;
+    font-family: 'dashicons' !important;
+    font-size: 20px !important;
+    line-height: 1 !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+}
+/* Ensure dashicons font is available */
+/* Ensure dashicons font is available */
+.mce-ico {
+    font-family: 'dashicons' !important;
+}

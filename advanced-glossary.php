@@ -69,6 +69,8 @@ class Advanced_Glossary {
         // Activation/Deactivation hooks
         register_activation_hook(__FILE__, array($this, 'activate'));
         register_deactivation_hook(__FILE__, array($this, 'deactivate'));
+
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_dashicons'));
     }
     
     /**
@@ -200,13 +202,17 @@ class Advanced_Glossary {
             'nonce' => wp_create_nonce('glossary_nonce')
         ));
     }
-    
+    public function enqueue_dashicons() {
+        wp_enqueue_style('dashicons');
+    }
+  
     /**
      * Enqueue Admin Assets
      */
     public function enqueue_admin_assets($hook) {
         // Enqueue on post edit pages
         if ('post.php' === $hook || 'post-new.php' === $hook) {
+            wp_enqueue_style('glossary-admin-style', ADVANCED_GLOSSARY_URL . 'css/glossary-editor.css', array(), ADVANCED_GLOSSARY_VERSION);
             wp_enqueue_script('glossary-admin', ADVANCED_GLOSSARY_URL . 'js/glossary-admin.js', array('jquery'), ADVANCED_GLOSSARY_VERSION, true);
             wp_localize_script('glossary-admin', 'glossaryAdmin', array(
                 'ajax_url' => admin_url('admin-ajax.php'),
@@ -219,6 +225,7 @@ class Advanced_Glossary {
      * Add Classic Editor Button
      */
     public function add_classic_editor_button() {
+        error_log( 'Adding classic editor button' );
         if (!current_user_can('edit_posts') && !current_user_can('edit_pages')) {
             return;
         }
@@ -405,43 +412,43 @@ class Advanced_Glossary {
         return '<span class="glossary-term" data-term-id="' . esc_attr($post->ID) . '">' . ($content ? esc_html($content) : esc_html($term)) . '</span>';
     }
     public function process_glossary_terms($content) {
-    // Match spans with glossary-term class and data-term attribute from Gutenberg
-    $pattern = '/<span class="glossary-term" data-term="([^"]+)">([^<]+)<\/span>/i';
-    
-    $content = preg_replace_callback($pattern, function($matches) {
-        $term_name = $matches[1];
-        $text = $matches[2];
-        $term_slug = sanitize_title($term_name);
+        // Match spans with glossary-term class and data-term attribute from Gutenberg
+        $pattern = '/<span class="glossary-term" data-term="([^"]+)">([^<]+)<\/span>/i';
         
-        // Try to find the glossary post by slug first
-        $post = get_page_by_path($term_slug, OBJECT, 'glossary');
-        
-        // If not found by slug, try searching by title
-        if (!$post) {
-            $args = array(
-                'post_type' => 'glossary',
-                'posts_per_page' => 1,
-                'post_status' => 'publish',
-                's' => $term_name // Use search instead
-            );
+        $content = preg_replace_callback($pattern, function($matches) {
+            $term_name = $matches[1];
+            $text = $matches[2];
+            $term_slug = sanitize_title($term_name);
             
-            $query = new WP_Query($args);
+            // Try to find the glossary post by slug first
+            $post = get_page_by_path($term_slug, OBJECT, 'glossary');
             
-            if ($query->have_posts()) {
-                $query->the_post();
-                $post_id = get_the_ID();
-                wp_reset_postdata();
+            // If not found by slug, try searching by title
+            if (!$post) {
+                $args = array(
+                    'post_type' => 'glossary',
+                    'posts_per_page' => 1,
+                    'post_status' => 'publish',
+                    's' => $term_name // Use search instead
+                );
                 
-                return '<span class="glossary-term" data-term-id="' . esc_attr($post_id) . '">' . esc_html($text) . '</span>';
+                $query = new WP_Query($args);
+                
+                if ($query->have_posts()) {
+                    $query->the_post();
+                    $post_id = get_the_ID();
+                    wp_reset_postdata();
+                    
+                    return '<span class="glossary-term" data-term-id="' . esc_attr($post_id) . '">' . esc_html($text) . '</span>';
+                }
+            } else {
+                return '<span class="glossary-term" data-term-id="' . esc_attr($post->ID) . '">' . esc_html($text) . '</span>';
             }
-        } else {
-            return '<span class="glossary-term" data-term-id="' . esc_attr($post->ID) . '">' . esc_html($text) . '</span>';
-        }
-        
-        // If no glossary term found, return the original text without the span
-        return esc_html($text);
-        }, $content);
-        
+            
+            // If no glossary term found, return the original text without the span
+            return esc_html($text);
+            }, $content);
+            
         return $content;
     }
     /**
@@ -458,6 +465,7 @@ class Advanced_Glossary {
     public function deactivate() {
         flush_rewrite_rules();
     }
+ 
 }
 
 // Initialize plugin

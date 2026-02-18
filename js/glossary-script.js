@@ -5,7 +5,7 @@ jQuery(document).ready(function($) {
     // Create tooltip element
     function createTooltip() {
         if (!tooltip) {
-            tooltip = $('<div class="glossary-tooltip"><div class="glossary-tooltip-inner"><div class="glossary-tooltip-title"></div><div class="glossary-tooltip-content"></div><a href="#" class="glossary-tooltip-link">Read more →</a></div></div>');
+            tooltip = $('<div class="glossary-tooltip"><div class="glossary-tooltip-inner"><div class="glossary-tooltip-title"></div><div class="glossary-tooltip-content"></div></div></div>');
             $('body').append(tooltip);
         }
         return tooltip;
