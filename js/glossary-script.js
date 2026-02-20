@@ -25,7 +25,7 @@ jQuery(document).ready(function($) {
         
         // Clear previous content but keep structure
         $tooltip.find('.glossary-tooltip-title').text('');
-        $tooltip.find('.glossary-tooltip-content').text('Loading...');
+        $tooltip.find('.glossary-tooltip-content').text(glossaryAjax.loading_text || 'Loading...');
         $tooltip.find('.glossary-tooltip-link').attr('href', '#').hide();
         
         // Position tooltip immediately so loading state is visible
@@ -59,7 +59,7 @@ jQuery(document).ready(function($) {
             },
             error: function(xhr, status, error) {
                 $tooltip.removeClass('loading');
-                $tooltip.find('.glossary-tooltip-content').text('Error loading definition');
+                $tooltip.find('.glossary-tooltip-content').text(glossaryAjax.error_text || 'Error loading definition');
             }
         });
     }

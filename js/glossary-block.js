@@ -4,7 +4,7 @@
     const { useEffect, useState } = wp.element;
     const { RichText } = wp.blockEditor;
 
-    registerBlockType('advanced-glossary/term', {
+    registerBlockType('advgls/term', {
         title: 'Glossary Term',
         icon: 'book',
         category: 'text',

@@ -10,9 +10,13 @@ jQuery(document).ready(function($) {
     window.glossaryHelper = {
         insertTerm: function(termId, displayText) {
             if (typeof tinymce !== 'undefined' && tinymce.activeEditor) {
+                // Escape values to prevent XSS
+                var escapedTermId = String(termId).replace(/[^0-9]/g, '');
+                var escapedDisplayText = $('<div>').text(displayText || '').html();
+                
                 tinymce.activeEditor.insertContent(
-                    '<span class="glossary-term" data-term-id="' + termId + '">' + 
-                    displayText + 
+                    '<span class="glossary-term" data-term-id="' + escapedTermId + '">' + 
+                    escapedDisplayText + 
                     '</span>'
                 );
             }

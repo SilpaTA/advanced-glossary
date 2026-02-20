@@ -1,11 +1,18 @@
 <?php
 /**
  * Plugin Name: Advanced Glossary
+ * Plugin URI: https://wordpress.org/plugins/advanced-glossary
  * Description: Create glossary terms with hover tooltips. Add glossary terms as custom post type and display definitions on hover.
  * Version: 1.0.0
+ * Requires at least: 5.0
+ * Requires PHP: 7.0
  * Author: Silpa T A
+ * Author URI: https://profiles.wordpress.org/shilpaashokan94/
  * License: GPL v2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: advanced-glossary
+ * Domain Path: /languages
+ * Network: false
  */
 
 // Exit if accessed directly
@@ -14,11 +21,11 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('ADVANCED_GLOSSARY_VERSION', '1.0.0');
-define('ADVANCED_GLOSSARY_PATH', plugin_dir_path(__FILE__));
-define('ADVANCED_GLOSSARY_URL', plugin_dir_url(__FILE__));
+define('ADVGLS_VERSION', '1.0.0');
+define('ADVGLS_PATH', plugin_dir_path(__FILE__));
+define('ADVGLS_URL', plugin_dir_url(__FILE__));
 
-class Advanced_Glossary {
+class Advgls_Glossary {
     
     private static $instance = null;
     
@@ -30,6 +37,9 @@ class Advanced_Glossary {
     }
     
     private function __construct() {
+        // Load plugin textdomain for internationalization
+        add_action('plugins_loaded', array($this, 'load_textdomain'));
+        
         // Load dependencies
         $this->load_dependencies();
         
@@ -39,6 +49,10 @@ class Advanced_Glossary {
         // Add meta boxes
         add_action('add_meta_boxes', array($this, 'add_glossary_meta_boxes'));
         add_action('save_post', array($this, 'save_glossary_meta'));
+        
+        // Clear cache when glossary terms are saved or deleted
+        add_action('save_post_glossary', array($this, 'clear_glossary_cache'));
+        add_action('delete_post', array($this, 'clear_glossary_cache_on_delete'));
         
         // Add Gutenberg block
         add_action('init', array($this, 'register_glossary_block'));
@@ -55,15 +69,16 @@ class Advanced_Glossary {
         add_action('wp_ajax_get_glossary_definition', array($this, 'ajax_get_glossary_definition'));
         add_action('wp_ajax_nopriv_get_glossary_definition', array($this, 'ajax_get_glossary_definition'));
         
-        // Auto-link glossary terms in content
-        add_filter('the_content', array($this, 'auto_link_glossary_terms'), 999);
+        // Auto-link glossary terms in content (runs after process_glossary_terms)
+        add_filter('the_content', array($this, 'auto_link_glossary_terms'), 15);
         
         // Add admin menu
         add_action('admin_menu', array($this, 'add_admin_menu'));
         
         // Register shortcode
         add_shortcode('glossary', array($this, 'glossary_shortcode_handler'));
-        add_filter('the_content', array($this, 'process_glossary_terms'), 10);
+        // Process glossary terms from Gutenberg (runs before auto-linking)
+        add_filter('the_content', array($this, 'process_glossary_terms'), 5);
 
 
         // Activation/Deactivation hooks
@@ -74,11 +89,22 @@ class Advanced_Glossary {
     }
     
     /**
+     * Load plugin textdomain
+     */
+    public function load_textdomain() {
+        load_plugin_textdomain(
+            'advanced-glossary',
+            false,
+            dirname(plugin_basename(__FILE__)) . '/languages'
+        );
+    }
+    
+    /**
      * Load plugin dependencies
      */
     private function load_dependencies() {
-        require_once ADVANCED_GLOSSARY_PATH . 'inc/class-glossary-settings.php';
-        require_once ADVANCED_GLOSSARY_PATH . 'inc/class-glossary-shortcode-generator.php';
+        require_once ADVGLS_PATH . 'inc/class-glossary-settings.php';
+        require_once ADVGLS_PATH . 'inc/class-glossary-shortcode-generator.php';
     }
     
     /**
@@ -86,17 +112,17 @@ class Advanced_Glossary {
      */
     public function register_glossary_post_type() {
         $labels = array(
-            'name'                  => 'Glossary Terms',
-            'singular_name'         => 'Glossary Term',
-            'menu_name'             => 'Glossary',
-            'add_new'               => 'Add New Term',
-            'add_new_item'          => 'Add New Glossary Term',
-            'edit_item'             => 'Edit Glossary Term',
-            'new_item'              => 'New Glossary Term',
-            'view_item'             => 'View Glossary Term',
-            'search_items'          => 'Search Glossary',
-            'not_found'             => 'No glossary terms found',
-            'not_found_in_trash'    => 'No glossary terms found in trash',
+            'name'                  => __('Glossary Terms', 'advanced-glossary'),
+            'singular_name'         => __('Glossary Term', 'advanced-glossary'),
+            'menu_name'             => __('Glossary', 'advanced-glossary'),
+            'add_new'               => __('Add New Term', 'advanced-glossary'),
+            'add_new_item'          => __('Add New Glossary Term', 'advanced-glossary'),
+            'edit_item'             => __('Edit Glossary Term', 'advanced-glossary'),
+            'new_item'              => __('New Glossary Term', 'advanced-glossary'),
+            'view_item'             => __('View Glossary Term', 'advanced-glossary'),
+            'search_items'          => __('Search Glossary', 'advanced-glossary'),
+            'not_found'             => __('No glossary terms found', 'advanced-glossary'),
+            'not_found_in_trash'    => __('No glossary terms found in trash', 'advanced-glossary'),
         );
         
         $args = array(
@@ -121,7 +147,7 @@ class Advanced_Glossary {
     public function add_glossary_meta_boxes() {
         add_meta_box(
             'glossary_description',
-            'Glossary Definition',
+            __('Glossary Definition', 'advanced-glossary'),
             array($this, 'render_glossary_meta_box'),
             'glossary',
             'normal',
@@ -137,9 +163,9 @@ class Advanced_Glossary {
         $description = get_post_meta($post->ID, '_glossary_description', true);
         ?>
         <p>
-            <label for="glossary_description"><strong>Short Definition (for tooltip):</strong></label><br>
+            <label for="glossary_description"><strong><?php esc_html_e('Short Definition (for tooltip):', 'advanced-glossary'); ?></strong></label><br>
             <textarea id="glossary_description" name="glossary_description" rows="4" style="width:100%;"><?php echo esc_textarea($description); ?></textarea>
-            <span class="description">This brief definition will appear in the hover tooltip.</span>
+            <span class="description"><?php esc_html_e('This brief definition will appear in the hover tooltip.', 'advanced-glossary'); ?></span>
         </p>
         <?php
     }
@@ -178,15 +204,15 @@ class Advanced_Glossary {
         }
         
         wp_register_script(
-            'glossary-block',
-            ADVANCED_GLOSSARY_URL . 'js/glossary-block.js',
+            'advgls-block',
+            ADVGLS_URL . 'js/glossary-block.js',
             array('wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-data'),
-            ADVANCED_GLOSSARY_VERSION,
+            ADVGLS_VERSION,
             true
         );
         
-        register_block_type('advanced-glossary/term', array(
-            'editor_script' => 'glossary-block',
+        register_block_type('advgls/term', array(
+            'editor_script' => 'advgls-block',
         ));
     }
     
@@ -194,12 +220,14 @@ class Advanced_Glossary {
      * Enqueue Frontend Assets
      */
     public function enqueue_frontend_assets() {
-        wp_enqueue_style('glossary-style', ADVANCED_GLOSSARY_URL . 'css/glossary-style.css', array(), ADVANCED_GLOSSARY_VERSION);
-        wp_enqueue_script('glossary-script', ADVANCED_GLOSSARY_URL . 'js/glossary-script.js', array('jquery'), ADVANCED_GLOSSARY_VERSION, true);
+        wp_enqueue_style('advgls-style', ADVGLS_URL . 'css/glossary-style.css', array(), ADVGLS_VERSION);
+        wp_enqueue_script('advgls-script', ADVGLS_URL . 'js/glossary-script.js', array('jquery'), ADVGLS_VERSION, true);
         
-        wp_localize_script('glossary-script', 'glossaryAjax', array(
+        wp_localize_script('advgls-script', 'glossaryAjax', array(
             'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('glossary_nonce')
+            'nonce' => wp_create_nonce('glossary_nonce'),
+            'loading_text' => __('Loading...', 'advanced-glossary'),
+            'error_text' => __('Error loading definition', 'advanced-glossary')
         ));
     }
     public function enqueue_dashicons() {
@@ -212,11 +240,17 @@ class Advanced_Glossary {
     public function enqueue_admin_assets($hook) {
         // Enqueue on post edit pages
         if ('post.php' === $hook || 'post-new.php' === $hook) {
-            wp_enqueue_style('glossary-admin-style', ADVANCED_GLOSSARY_URL . 'css/glossary-editor.css', array(), ADVANCED_GLOSSARY_VERSION);
-            wp_enqueue_script('glossary-admin', ADVANCED_GLOSSARY_URL . 'js/glossary-admin.js', array('jquery'), ADVANCED_GLOSSARY_VERSION, true);
-            wp_localize_script('glossary-admin', 'glossaryAdmin', array(
+            wp_enqueue_style('advgls-admin-style', ADVGLS_URL . 'css/glossary-editor.css', array(), ADVGLS_VERSION);
+            wp_enqueue_script('advgls-admin', ADVGLS_URL . 'js/glossary-admin.js', array('jquery'), ADVGLS_VERSION, true);
+            wp_localize_script('advgls-admin', 'glossaryAdmin', array(
                 'ajax_url' => admin_url('admin-ajax.php'),
-                'nonce' => wp_create_nonce('glossary_nonce')
+                'nonce' => wp_create_nonce('glossary_nonce'),
+                'select_text' => __('Please select some text in the editor to link to a glossary term.', 'advanced-glossary'),
+                'load_error' => __('Failed to load glossary terms', 'advanced-glossary'),
+                'error_loading' => __('Error loading glossary terms', 'advanced-glossary'),
+                'no_terms' => __('No glossary terms available. Please create some glossary terms first.', 'advanced-glossary'),
+                'select_term' => __('Please select a glossary term', 'advanced-glossary'),
+                'term_not_found' => __('Selected term not found', 'advanced-glossary')
             ));
         }
     }
@@ -225,7 +259,6 @@ class Advanced_Glossary {
      * Add Classic Editor Button
      */
     public function add_classic_editor_button() {
-        error_log( 'Adding classic editor button' );
         if (!current_user_can('edit_posts') && !current_user_can('edit_pages')) {
             return;
         }
@@ -239,12 +272,12 @@ class Advanced_Glossary {
     }
     
     public function add_tinymce_plugin($plugin_array) {
-        $plugin_array['glossary_button'] = ADVANCED_GLOSSARY_URL . 'js/glossary-tinymce.js';
+        $plugin_array['advgls_button'] = ADVGLS_URL . 'js/glossary-tinymce.js';
         return $plugin_array;
     }
     
     public function register_tinymce_button($buttons) {
-        array_push($buttons, 'glossary_button');
+        array_push($buttons, 'advgls_button');
         return $buttons;
     }
     
@@ -254,8 +287,14 @@ class Advanced_Glossary {
     public function ajax_get_glossary_terms() {
         check_ajax_referer('glossary_nonce', 'nonce');
         
+        if (!current_user_can('edit_posts')) {
+            wp_send_json_error(__('Insufficient permissions', 'advanced-glossary'));
+            return;
+        }
+        
         $args = array(
             'post_type' => 'glossary',
+            'post_status' => 'publish',
             'posts_per_page' => -1,
             'orderby' => 'title',
             'order' => 'ASC',
@@ -280,32 +319,36 @@ class Advanced_Glossary {
     public function ajax_get_glossary_definition() {
         check_ajax_referer('glossary_nonce', 'nonce');
         
-        $term_id = isset($_POST['term_id']) ? intval($_POST['term_id']) : 0;
+        $term_id = isset($_POST['term_id']) ? absint($_POST['term_id']) : 0;
         
         if (!$term_id) {
-            wp_send_json_error('Invalid term ID');
+            wp_send_json_error(__('Invalid term ID', 'advanced-glossary'));
+            return;
         }
         
         $term = get_post($term_id);
         
-        if (!$term || $term->post_type !== 'glossary') {
-            wp_send_json_error('Term not found');
+        if (!$term || $term->post_type !== 'glossary' || $term->post_status !== 'publish') {
+            wp_send_json_error(__('Term not found', 'advanced-glossary'));
+            return;
         }
         
         $description = get_post_meta($term_id, '_glossary_description', true);
+        $permalink = get_permalink($term_id);
+        
         wp_send_json_success(array(
-            'title' => $term->post_title,
-            'description' => $description ? $description : 'No description available.',
-            'link' => get_permalink($term_id),
+            'title' => sanitize_text_field($term->post_title),
+            'description' => $description ? wp_kses_post($description) : __('No description available.', 'advanced-glossary'),
+            'link' => $permalink ? esc_url($permalink) : '',
         ));
     }
 
     public function enqueue_block_editor_assets() {
         wp_enqueue_script(
-            'glossary-format',
-            ADVANCED_GLOSSARY_URL . 'js/glossary-format.js',
+            'advgls-format',
+            ADVGLS_URL . 'js/glossary-format.js',
             array('wp-rich-text', 'wp-element', 'wp-block-editor', 'wp-components', 'wp-api-fetch', 'wp-data'),
-            ADVANCED_GLOSSARY_VERSION,
+            ADVGLS_VERSION,
             true
         );
         
@@ -319,26 +362,124 @@ class Advanced_Glossary {
         }
 
         // Check if auto-linking is enabled
-        $auto_link_enabled = get_option('advanced_glossary_auto_link', 1);
+        $auto_link_enabled = get_option('advgls_auto_link', 1);
         if (!$auto_link_enabled) {
             return $content;
         }
 
-        $args = array(
-            'post_type' => 'glossary',
-            'posts_per_page' => -1,
-        );
-
-        $glossary_terms = get_posts($args);
-
-        foreach ($glossary_terms as $term) {
-            $word = preg_quote($term->post_title, '/');
-            $pattern = '/\b(' . $word . ')\b/i';
-            $replacement = '<span class="glossary-term" data-term-id="' . $term->ID . '">$1</span>';
-            $content = preg_replace($pattern, $replacement, $content, 1);
+        // Skip if content already contains glossary terms (avoid double processing)
+        if (strpos($content, 'glossary-term') !== false) {
+            return $content;
         }
 
-        return $content;
+        // Get cached glossary terms
+        $cache_key = 'advgls_terms';
+        $glossary_terms = get_transient($cache_key);
+        
+        if (false === $glossary_terms) {
+            $args = array(
+                'post_type' => 'glossary',
+                'post_status' => 'publish',
+                'posts_per_page' => -1,
+                'orderby' => 'title',
+                'order' => 'ASC'
+            );
+
+            $glossary_terms = get_posts($args);
+            // Cache for 1 hour
+            set_transient($cache_key, $glossary_terms, HOUR_IN_SECONDS);
+        }
+
+        if (empty($glossary_terms)) {
+            return $content;
+        }
+
+        // Sort terms by length (longest first) to match longer terms first
+        usort($glossary_terms, function($a, $b) {
+            return strlen($b->post_title) - strlen($a->post_title);
+        });
+
+        // Process content by splitting into text and HTML parts
+        $processed_content = '';
+        $offset = 0;
+        $content_length = strlen($content);
+        
+        // Find all HTML tags and glossary spans
+        preg_match_all('/(<[^>]+>)/', $content, $tag_matches, PREG_OFFSET_CAPTURE);
+        
+        $text_segments = array();
+        $last_pos = 0;
+        
+        foreach ($tag_matches[0] as $tag_match) {
+            $tag_pos = $tag_match[1];
+            $tag = $tag_match[0];
+            
+            // Extract text before this tag
+            if ($tag_pos > $last_pos) {
+                $text_segments[] = array(
+                    'type' => 'text',
+                    'content' => substr($content, $last_pos, $tag_pos - $last_pos),
+                    'start' => $last_pos,
+                    'end' => $tag_pos
+                );
+            }
+            
+            // Add the tag
+            $text_segments[] = array(
+                'type' => 'tag',
+                'content' => $tag,
+                'start' => $tag_pos,
+                'end' => $tag_pos + strlen($tag)
+            );
+            
+            $last_pos = $tag_pos + strlen($tag);
+        }
+        
+        // Add remaining text
+        if ($last_pos < $content_length) {
+            $text_segments[] = array(
+                'type' => 'text',
+                'content' => substr($content, $last_pos),
+                'start' => $last_pos,
+                'end' => $content_length
+            );
+        }
+        
+        // Process each text segment
+        foreach ($text_segments as $segment) {
+            if ($segment['type'] === 'tag') {
+                $processed_content .= $segment['content'];
+            } else {
+                $text = $segment['content'];
+                
+                // Skip if already contains glossary terms
+                if (strpos($text, 'glossary-term') !== false) {
+                    $processed_content .= $text;
+                    continue;
+                }
+                
+                // Try to match each glossary term
+                foreach ($glossary_terms as $term) {
+                    $word = $term->post_title;
+                    if (empty($word)) {
+                        continue;
+                    }
+                    
+                    $word_escaped = preg_quote($word, '/');
+                    $pattern = '/\b(' . $word_escaped . ')\b/i';
+                    
+                    if (preg_match($pattern, $text)) {
+                        $text = preg_replace($pattern, '<span class="glossary-term" data-term-id="' . esc_attr($term->ID) . '">$1</span>', $text, 1);
+                        // Only link first occurrence per text segment
+                        break;
+                    }
+                }
+                
+                $processed_content .= $text;
+            }
+        }
+
+        return $processed_content;
     }
     
     /**
@@ -348,33 +489,33 @@ class Advanced_Glossary {
     public function add_admin_menu() {
            
         add_menu_page(
-            'Glossary',
-            'Glossary',
+            __('Glossary', 'advanced-glossary'),
+            __('Glossary', 'advanced-glossary'),
             'manage_options',
             'edit.php?post_type=glossary',
             '',
-            'dashicons-testimonial', // Use your custom SVG icon
+            'dashicons-testimonial',
             30
         );
         
         // Settings submenu
         add_submenu_page(
             'edit.php?post_type=glossary',
-            'Glossary Settings',
-            'Settings',
+            __('Glossary Settings', 'advanced-glossary'),
+            __('Settings', 'advanced-glossary'),
             'manage_options',
-            'glossary-settings',
-            array('Glossary_Settings', 'render_page')
+            'advgls-settings',
+            array('Advgls_Settings', 'render_page')
         );
         
         // Shortcode Generator submenu
         add_submenu_page(
             'edit.php?post_type=glossary',
-            'Shortcode Generator',
-            'Shortcode Generator',
+            __('Shortcode Generator', 'advanced-glossary'),
+            __('Shortcode Generator', 'advanced-glossary'),
             'manage_options',
-            'glossary-shortcode-generator',
-            array('Glossary_Shortcode_Generator', 'render_page')
+            'advgls-shortcode-generator',
+            array('Advgls_Shortcode_Generator', 'render_page')
         );
     }
     
@@ -387,29 +528,47 @@ class Advanced_Glossary {
             'id' => ''
         ), $atts);
 
-        $term = $atts['term'];
-        $id = $atts['id'];
+        $term = sanitize_text_field($atts['term']);
+        $id = isset($atts['id']) ? absint($atts['id']) : 0;
+
+        $post = null;
 
         if ($id) {
             $post = get_post($id);
-            if ($post) {
-                $term = $post->post_title;
+            if (!$post || $post->post_type !== 'glossary' || $post->post_status !== 'publish') {
+                $post = null;
             }
-        } else {
-            $query = new WP_Query(array(
-                'post_type' => 'glossary',
-                'title' => $term,
-                'posts_per_page' => 1
-            ));
-
-            $post = $query->have_posts() ? $query->next_post() : null;
+        } elseif ($term) {
+            // Try to find by post_name (slug) first
+            $term_slug = sanitize_title($term);
+            $post = get_page_by_path($term_slug, OBJECT, 'glossary');
+            
+            // If not found by slug or not published, search by exact title match
+            if (!$post || $post->post_status !== 'publish') {
+                // Get all published glossary terms and find exact title match
+                $all_terms = get_posts(array(
+                    'post_type' => 'glossary',
+                    'post_status' => 'publish',
+                    'posts_per_page' => -1,
+                    'orderby' => 'title',
+                    'order' => 'ASC'
+                ));
+                
+                foreach ($all_terms as $glossary_term) {
+                    if (strcasecmp($glossary_term->post_title, $term) === 0) {
+                        $post = $glossary_term;
+                        break;
+                    }
+                }
+            }
         }
 
         if (!$post) {
-            return $content ? $content : esc_html($term);
+            return $content ? do_shortcode($content) : esc_html($term);
         }
 
-        return '<span class="glossary-term" data-term-id="' . esc_attr($post->ID) . '">' . ($content ? esc_html($content) : esc_html($term)) . '</span>';
+        $display_text = $content ? do_shortcode($content) : esc_html($post->post_title);
+        return '<span class="glossary-term" data-term-id="' . esc_attr($post->ID) . '">' . $display_text . '</span>';
     }
     public function process_glossary_terms($content) {
         // Match spans with glossary-term class and data-term attribute from Gutenberg
@@ -457,6 +616,25 @@ class Advanced_Glossary {
     public function activate() {
         $this->register_glossary_post_type();
         flush_rewrite_rules();
+        // Clear any cached glossary terms
+        delete_transient('advgls_terms');
+    }
+    
+    /**
+     * Clear glossary cache
+     */
+    public function clear_glossary_cache() {
+        delete_transient('advgls_terms');
+    }
+    
+    /**
+     * Clear cache when glossary term is deleted
+     */
+    public function clear_glossary_cache_on_delete($post_id) {
+        $post = get_post($post_id);
+        if ($post && $post->post_type === 'glossary') {
+            $this->clear_glossary_cache();
+        }
     }
     
     /**
@@ -464,9 +642,11 @@ class Advanced_Glossary {
      */
     public function deactivate() {
         flush_rewrite_rules();
+        // Clear cached glossary terms
+        $this->clear_glossary_cache();
     }
  
 }
 
 // Initialize plugin
-Advanced_Glossary::get_instance();
+Advgls_Glossary::get_instance();

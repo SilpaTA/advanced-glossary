@@ -107,7 +107,7 @@
         );
     };
 
-    registerFormatType('advanced-glossary/inline', {
+    registerFormatType('advgls/inline', {
         title: 'Glossary Term',
         tagName: 'span',
         className: 'glossary-term',
@@ -120,7 +120,7 @@
 
             const onToggle = function() {
                 if (isActive) {
-                    onChange(removeFormat(value, 'advanced-glossary/inline'));
+                    onChange(removeFormat(value, 'advgls/inline'));
                 } else {
                     setShowModal(true);
                 }
@@ -128,7 +128,7 @@
 
             const onSelectTerm = function(term) {
                 const format = {
-                    type: 'advanced-glossary/inline',
+                    type: 'advgls/inline',
                     attributes: {
                         'data-term-id': term.id.toString()
                     }
