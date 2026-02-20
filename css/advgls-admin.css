@@ -1,0 +1,11 @@
+/* Admin Page Styles - Override WordPress core card max-width */
+
+/* Ensure cards in glossary admin pages use full width - scoped to our plugin only */
+body.glossary_page_advgls-shortcode-generator .wrap .card,
+body.glossary_page_advgls-import-csv .wrap .card,
+body.glossary_page_advgls-settings .wrap .card,
+body.glossary_page_advgls-import-csv .wrap .card,
+.advgls-csv-import-wrap .card,
+.advgls-import-container .card {
+    max-width: 100% !important;
+}

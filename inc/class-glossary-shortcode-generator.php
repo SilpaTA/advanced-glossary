@@ -48,7 +48,7 @@ class Advgls_Shortcode_Generator {
         <div class="wrap">
             <h1><?php echo esc_html__('Glossary Shortcode Generator', 'advanced-glossary'); ?></h1>
             
-            <div class="card" style="max-width: 800px;">
+            <div class="card">
                 <h2><?php esc_html_e('Generate Glossary Shortcode', 'advanced-glossary'); ?></h2>
                 <p><?php esc_html_e('Use this tool to generate shortcodes for your glossary terms. You can then copy and paste the shortcode into your posts or pages.', 'advanced-glossary'); ?></p>
                 
@@ -102,7 +102,7 @@ class Advgls_Shortcode_Generator {
                 </table>
             </div>
             
-            <div class="card" style="max-width: 800px; margin-top: 20px;">
+            <div class="card" style="margin-top: 20px;">
                 <h2><?php esc_html_e('Shortcode Usage Examples', 'advanced-glossary'); ?></h2>
                 <p><strong><?php esc_html_e('Basic usage (with term name):', 'advanced-glossary'); ?></strong></p>
                 <code>[glossary term="Your Term Name"]</code>

@@ -21,7 +21,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('ADVGLS_VERSION', '1.0.0');
+define('ADVGLS_VERSION', '1.0.1');
 define('ADVGLS_PATH', plugin_dir_path(__FILE__));
 define('ADVGLS_URL', plugin_dir_url(__FILE__));
 
@@ -105,6 +105,7 @@ class Advgls_Glossary {
     private function load_dependencies() {
         require_once ADVGLS_PATH . 'inc/class-glossary-settings.php';
         require_once ADVGLS_PATH . 'inc/class-glossary-shortcode-generator.php';
+        require_once ADVGLS_PATH . 'inc/class-advgls-csv-importer.php';
     }
     
     /**
@@ -238,6 +239,11 @@ class Advgls_Glossary {
      * Enqueue Admin Assets
      */
     public function enqueue_admin_assets($hook) {
+        // Enqueue admin styles for all glossary admin pages
+        if (strpos($hook, 'glossary') !== false || strpos($hook, 'advgls') !== false) {
+            wp_enqueue_style('advgls-admin', ADVGLS_URL . 'css/advgls-admin.css', array(), ADVGLS_VERSION);
+        }
+        
         // Enqueue on post edit pages
         if ('post.php' === $hook || 'post-new.php' === $hook) {
             wp_enqueue_style('advgls-admin-style', ADVGLS_URL . 'css/glossary-editor.css', array(), ADVGLS_VERSION);
@@ -516,6 +522,16 @@ class Advgls_Glossary {
             'manage_options',
             'advgls-shortcode-generator',
             array('Advgls_Shortcode_Generator', 'render_page')
+        );
+        
+        // CSV Import submenu
+        add_submenu_page(
+            'edit.php?post_type=glossary',
+            __('Import from CSV', 'advanced-glossary'),
+            __('Import from CSV', 'advanced-glossary'),
+            'manage_options',
+            'advgls-import-csv',
+            array('Advgls_CSV_Importer', 'render_page')
         );
     }
     
