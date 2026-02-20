@@ -57,8 +57,8 @@
 
 Before submitting to WordPress.org, verify:
 
-1. **Test on Latest WordPress**: Test with WordPress 6.4+
-2. **Test on PHP 7.0+**: Ensure compatibility
+1. **Test on Latest WordPress**: Test with WordPress 6.9
+2. **Test on PHP 7.4+**: Ensure compatibility (PHP 8.0+ recommended)
 3. **No External Dependencies**: Verify no external libraries bundled
 4. **Screenshots**: Prepare screenshots for plugin directory
 5. **Banner Image**: Create 772x250px banner image

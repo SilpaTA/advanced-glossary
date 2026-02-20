@@ -4,8 +4,8 @@
  * Plugin URI: https://wordpress.org/plugins/advanced-glossary
  * Description: Create glossary terms with hover tooltips. Add glossary terms as custom post type and display definitions on hover.
  * Version: 1.0.0
- * Requires at least: 5.0
- * Requires PHP: 7.0
+ * Requires at least: 6.4
+ * Requires PHP: 7.4
  * Author: Silpa T A
  * Author URI: https://profiles.wordpress.org/shilpaashokan94/
  * License: GPL v2 or later
