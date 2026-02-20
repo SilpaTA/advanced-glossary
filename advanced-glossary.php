@@ -374,7 +374,7 @@ class Advgls_Glossary {
         }
 
         // Skip if content already contains glossary terms (avoid double processing)
-        if (strpos($content, 'glossary-term') !== false) {
+        if (strpos($content, 'advgls-term') !== false) {
             return $content;
         }
 
@@ -459,7 +459,7 @@ class Advgls_Glossary {
                 $text = $segment['content'];
                 
                 // Skip if already contains glossary terms
-                if (strpos($text, 'glossary-term') !== false) {
+                if (strpos($text, 'advgls-term') !== false) {
                     $processed_content .= $text;
                     continue;
                 }
@@ -475,7 +475,7 @@ class Advgls_Glossary {
                     $pattern = '/\b(' . $word_escaped . ')\b/i';
                     
                     if (preg_match($pattern, $text)) {
-                        $text = preg_replace($pattern, '<span class="glossary-term" data-term-id="' . esc_attr($term->ID) . '">$1</span>', $text, 1);
+                        $text = preg_replace($pattern, '<span class="advgls-term" data-term-id="' . esc_attr($term->ID) . '">$1</span>', $text, 1);
                         // Only link first occurrence per text segment
                         break;
                     }
@@ -584,11 +584,11 @@ class Advgls_Glossary {
         }
 
         $display_text = $content ? do_shortcode($content) : esc_html($post->post_title);
-        return '<span class="glossary-term" data-term-id="' . esc_attr($post->ID) . '">' . $display_text . '</span>';
+        return '<span class="advgls-term" data-term-id="' . esc_attr($post->ID) . '">' . $display_text . '</span>';
     }
     public function process_glossary_terms($content) {
-        // Match spans with glossary-term class and data-term attribute from Gutenberg
-        $pattern = '/<span class="glossary-term" data-term="([^"]+)">([^<]+)<\/span>/i';
+        // Match spans with advgls-term class and data-term attribute from Gutenberg
+        $pattern = '/<span class="advgls-term" data-term="([^"]+)">([^<]+)<\/span>/i';
         
         $content = preg_replace_callback($pattern, function($matches) {
             $term_name = $matches[1];
@@ -614,10 +614,10 @@ class Advgls_Glossary {
                     $post_id = get_the_ID();
                     wp_reset_postdata();
                     
-                    return '<span class="glossary-term" data-term-id="' . esc_attr($post_id) . '">' . esc_html($text) . '</span>';
+                    return '<span class="advgls-term" data-term-id="' . esc_attr($post_id) . '">' . esc_html($text) . '</span>';
                 }
             } else {
-                return '<span class="glossary-term" data-term-id="' . esc_attr($post->ID) . '">' . esc_html($text) . '</span>';
+                return '<span class="advgls-term" data-term-id="' . esc_attr($post->ID) . '">' . esc_html($text) . '</span>';
             }
             
             // If no glossary term found, return the original text without the span

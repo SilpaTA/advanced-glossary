@@ -15,7 +15,7 @@ jQuery(document).ready(function($) {
                 var escapedDisplayText = $('<div>').text(displayText || '').html();
                 
                 tinymce.activeEditor.insertContent(
-                    '<span class="glossary-term" data-term-id="' + escapedTermId + '">' + 
+                    '<span class="advgls-term" data-term-id="' + escapedTermId + '">' + 
                     escapedDisplayText + 
                     '</span>'
                 );

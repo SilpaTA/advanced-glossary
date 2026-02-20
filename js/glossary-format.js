@@ -33,7 +33,7 @@
             {
                 title: 'Select Glossary Term',
                 onRequestClose: onClose,
-                className: 'glossary-term-modal'
+                className: 'advgls-term-modal'
             },
             loading ? wp.element.createElement(
                 'div',
@@ -110,7 +110,7 @@
     registerFormatType('advgls/inline', {
         title: 'Glossary Term',
         tagName: 'span',
-        className: 'glossary-term',
+        className: 'advgls-term',
         attributes: {
             'data-term-id': 'data-term-id'
         },

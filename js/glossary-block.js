@@ -108,7 +108,7 @@
                     },
                     wp.element.createElement('strong', {}, 'Preview: '),
                     wp.element.createElement('span', {
-                        className: 'glossary-term',
+                        className: 'advgls-term',
                         style: {
                             color: '#2271b1',
                             textDecoration: 'underline dotted',

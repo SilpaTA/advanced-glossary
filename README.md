@@ -146,7 +146,7 @@ Edit `css/glossary-style.css` to customize:
 - Positioning
 
 #### Changing Link Appearance
-Modify the `.glossary-term` CSS class to change:
+Modify the `.advgls-term` CSS class to change:
 - Text color
 - Underline style
 - Hover effects
@@ -174,7 +174,7 @@ Or use the **Custom CSS** option in **Glossary → Settings** to add your own st
 ### Manual Term Insertion in HTML
 You can manually add glossary terms in HTML mode:
 ```html
-<span class="glossary-term" data-term-id="123">Your Term</span>
+<span class="advgls-term" data-term-id="123">Your Term</span>
 ```
 
 ### Disable Auto-linking for Specific Posts

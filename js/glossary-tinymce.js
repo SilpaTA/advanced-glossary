@@ -25,7 +25,7 @@
         editor.on('BeforeSetContent', function (e) {
             if (e.content && e.content.indexOf('[glossary') !== -1) {
                 e.content = e.content.replace(/\[glossary id="(\d+)"\](.*?)\[\/glossary\]/g, function (match, id, text) {
-                    return '<span class="glossary-term glossary-highlight" data-term-id="' + id + '" style="color:#2271b1; text-decoration:underline dotted; text-decoration-thickness:2px; cursor:help; position:relative; transition:color 0.2s ease;">' + text + '</span>';
+                    return '<span class="advgls-term advgls-highlight" data-term-id="' + id + '" style="color:#2271b1; text-decoration:underline dotted; text-decoration-thickness:2px; cursor:help; position:relative; transition:color 0.2s ease;">' + text + '</span>';
                 });
             }
         });
@@ -33,7 +33,7 @@
         // Convert span back to shortcode when saving
         editor.on('PostProcess', function (e) {
             if (e.get) {
-                e.content = e.content.replace(/<span[^>]*class="[^"]*glossary-term[^"]*"[^>]*data-term-id="(\d+)"[^>]*>(.*?)<\/span>/g, function (match, id, text) {
+                e.content = e.content.replace(/<span[^>]*class="[^"]*advgls-term[^"]*"[^>]*data-term-id="(\d+)"[^>]*>(.*?)<\/span>/g, function (match, id, text) {
                     return '[glossary id="' + id + '"]' + text + '[/glossary]';
                 });
             }
@@ -42,7 +42,7 @@
         // Also convert when switching to text mode
         editor.on('GetContent', function (e) {
             if (e.format === 'raw' || e.format === 'html') {
-                e.content = e.content.replace(/<span[^>]*class="[^"]*glossary-term[^"]*"[^>]*data-term-id="(\d+)"[^>]*>(.*?)<\/span>/g, function (match, id, text) {
+                e.content = e.content.replace(/<span[^>]*class="[^"]*advgls-term[^"]*"[^>]*data-term-id="(\d+)"[^>]*>(.*?)<\/span>/g, function (match, id, text) {
                     return '[glossary id="' + id + '"]' + text + '[/glossary]';
                 });
             }
