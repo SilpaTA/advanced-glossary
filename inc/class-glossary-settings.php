@@ -23,7 +23,24 @@ class Advgls_Settings {
      * Register Settings
      */
     public static function register_settings() {
-        register_setting('advgls_settings_group', 'advgls_auto_link');
+        register_setting(
+            'advgls_settings_group',
+            'advgls_auto_link',
+            array(
+                'type'              => 'string',
+                'sanitize_callback' => array(__CLASS__, 'sanitize_auto_link'),
+            )
+        );
+    }
+
+    /**
+     * Sanitize the auto-link setting (checkbox: "1" or "").
+     *
+     * @param mixed $value Raw option value.
+     * @return string Sanitized value.
+     */
+    public static function sanitize_auto_link($value) {
+        return !empty($value) ? '1' : '';
     }
     
     /**

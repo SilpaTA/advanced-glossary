@@ -100,7 +100,7 @@ class Advgls_CSV_Importer {
      */
     private function render_import_page() {
         if (!current_user_can('manage_options')) {
-            wp_die(__('You do not have sufficient permissions to access this page.', 'advanced-glossary'));
+            wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'advanced-glossary'));
         }
         ?>
         <div class="wrap advgls-csv-import-wrap">
@@ -129,7 +129,7 @@ class Advgls_CSV_Importer {
                                         printf(
                                             /* translators: %s: Maximum file size */
                                             esc_html__('Maximum file size: %s', 'advanced-glossary'),
-                                            size_format($this->max_file_size)
+                                            esc_html( size_format($this->max_file_size) )
                                         );
                                         ?>
                                     </p>
@@ -458,7 +458,7 @@ class Advgls_CSV_Importer {
         $parsed = $this->parse_csv_file($file_path, $delimiter);
         if (is_wp_error($parsed)) {
             // Clean up uploaded file
-            @unlink($file_path);
+            wp_delete_file($file_path);
             wp_send_json_error($parsed->get_error_message());
         }
         
@@ -535,7 +535,7 @@ class Advgls_CSV_Importer {
             // Import complete - clean up
             $file_path = get_transient($upload_key);
             if ($file_path && file_exists($file_path)) {
-                @unlink($file_path); // Delete temporary file
+                wp_delete_file($file_path);// Delete temporary file
             }
             
             delete_transient($upload_key);
@@ -641,7 +641,7 @@ class Advgls_CSV_Importer {
         check_ajax_referer('advgls_csv_import', 'nonce');
         
         if (!current_user_can('manage_options')) {
-            wp_die(__('Insufficient permissions.', 'advanced-glossary'));
+            wp_die(esc_html__('Insufficient permissions.', 'advanced-glossary'));
         }
         
         $filename = 'glossary-import-template.csv';

@@ -12,7 +12,7 @@
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: advanced-glossary
  * Domain Path: /languages
- * Network: false
+
  */
 
 // Exit if accessed directly
@@ -37,8 +37,6 @@ class Advgls_Glossary {
     }
     
     private function __construct() {
-        // Load plugin textdomain for internationalization
-        add_action('plugins_loaded', array($this, 'load_textdomain'));
         
         // Load dependencies
         $this->load_dependencies();
@@ -88,17 +86,7 @@ class Advgls_Glossary {
         add_action('admin_enqueue_scripts', array($this, 'enqueue_dashicons'));
     }
     
-    /**
-     * Load plugin textdomain
-     */
-    public function load_textdomain() {
-        load_plugin_textdomain(
-            'advanced-glossary',
-            false,
-            dirname(plugin_basename(__FILE__)) . '/languages'
-        );
-    }
-    
+   
     /**
      * Load plugin dependencies
      */
