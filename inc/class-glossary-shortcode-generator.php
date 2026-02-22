@@ -2,7 +2,7 @@
 /**
  * Glossary Shortcode Generator Page
  *
- * @package Advanced_Glossary
+ * @package Advgls_Glossary
  */
 
 // Exit if accessed directly
@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class Glossary_Shortcode_Generator {
+class Advgls_Shortcode_Generator {
     
     /**
      * Initialize shortcode generator
@@ -23,12 +23,12 @@ class Glossary_Shortcode_Generator {
      * Enqueue Assets
      */
     public static function enqueue_assets($hook) {
-        if (isset($_GET['page']) && $_GET['page'] === 'glossary-shortcode-generator') {
+        if (isset($_GET['page']) && $_GET['page'] === 'advgls-shortcode-generator') {
             wp_enqueue_script(
-                'glossary-shortcode-generator',
-                ADVANCED_GLOSSARY_URL . 'js/glossary-shortcode-generator.js',
+                'advgls-shortcode-generator',
+                ADVGLS_URL . 'js/glossary-shortcode-generator.js',
                 array('jquery'),
-                ADVANCED_GLOSSARY_VERSION,
+                ADVGLS_VERSION,
                 true
             );
         }
@@ -46,20 +46,20 @@ class Glossary_Shortcode_Generator {
         ));
         ?>
         <div class="wrap">
-            <h1>Glossary Shortcode Generator</h1>
+            <h1><?php echo esc_html__('Glossary Shortcode Generator', 'advanced-glossary'); ?></h1>
             
-            <div class="card" style="max-width: 800px;">
-                <h2>Generate Glossary Shortcode</h2>
-                <p>Use this tool to generate shortcodes for your glossary terms. You can then copy and paste the shortcode into your posts or pages.</p>
+            <div class="card">
+                <h2><?php esc_html_e('Generate Glossary Shortcode', 'advanced-glossary'); ?></h2>
+                <p><?php esc_html_e('Use this tool to generate shortcodes for your glossary terms. You can then copy and paste the shortcode into your posts or pages.', 'advanced-glossary'); ?></p>
                 
                 <table class="form-table">
                     <tr>
                         <th scope="row">
-                            <label for="glossary_term_select">Select a Glossary Term:</label>
+                            <label for="glossary_term_select"><?php esc_html_e('Select a Glossary Term:', 'advanced-glossary'); ?></label>
                         </th>
                         <td>
                             <select id="glossary_term_select" style="min-width: 300px;">
-                                <option value="">-- Select a term --</option>
+                                <option value=""><?php esc_html_e('-- Select a term --', 'advanced-glossary'); ?></option>
                                 <?php foreach ($terms as $term): ?>
                                     <option value="<?php echo esc_attr($term->post_title); ?>" data-id="<?php echo esc_attr($term->ID); ?>">
                                         <?php echo esc_html($term->post_title); ?>
@@ -68,7 +68,13 @@ class Glossary_Shortcode_Generator {
                             </select>
                             <?php if (empty($terms)): ?>
                                 <p class="description" style="color: #d63638;">
-                                    No glossary terms found. Please <a href="<?php echo admin_url('post-new.php?post_type=glossary'); ?>">create some terms</a> first.
+                                    <?php
+                                    printf(
+                                        /* translators: %s: Link to create new glossary term */
+                                        esc_html__('No glossary terms found. Please %s first.', 'advanced-glossary'),
+                                        '<a href="' . esc_url(admin_url('post-new.php?post_type=glossary')) . '">' . esc_html__('create some terms', 'advanced-glossary') . '</a>'
+                                    );
+                                    ?>
                                 </p>
                             <?php endif; ?>
                         </td>
@@ -77,38 +83,38 @@ class Glossary_Shortcode_Generator {
                         <th scope="row"></th>
                         <td>
                             <button type="button" id="generate_shortcode" class="button button-primary" <?php echo empty($terms) ? 'disabled' : ''; ?>>
-                                Generate Shortcode
+                                <?php esc_html_e('Generate Shortcode', 'advanced-glossary'); ?>
                             </button>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="shortcode_output">Generated Shortcode:</label>
+                            <label for="shortcode_output"><?php esc_html_e('Generated Shortcode:', 'advanced-glossary'); ?></label>
                         </th>
                         <td>
-                            <input type="text" id="shortcode_output" readonly style="width: 100%; max-width: 500px;" placeholder="Select a term and click Generate">
+                            <input type="text" id="shortcode_output" readonly style="width: 100%; max-width: 500px;" placeholder="<?php esc_attr_e('Select a term and click Generate', 'advanced-glossary'); ?>">
                             <button type="button" id="copy_shortcode" class="button" style="margin-left: 10px;" disabled>
-                                Copy to Clipboard
+                                <?php esc_html_e('Copy to Clipboard', 'advanced-glossary'); ?>
                             </button>
-                            <p class="description">Use this shortcode in your posts or pages to link to a glossary term with hover tooltip.</p>
+                            <p class="description"><?php esc_html_e('Use this shortcode in your posts or pages to link to a glossary term with hover tooltip.', 'advanced-glossary'); ?></p>
                         </td>
                     </tr>
                 </table>
             </div>
             
-            <div class="card" style="max-width: 800px; margin-top: 20px;">
-                <h2>Shortcode Usage Examples</h2>
-                <p><strong>Basic usage (with term name):</strong></p>
+            <div class="card" style="margin-top: 20px;">
+                <h2><?php esc_html_e('Shortcode Usage Examples', 'advanced-glossary'); ?></h2>
+                <p><strong><?php esc_html_e('Basic usage (with term name):', 'advanced-glossary'); ?></strong></p>
                 <code>[glossary term="Your Term Name"]</code>
-                <p class="description">This will display the term name as a link with hover tooltip.</p>
+                <p class="description"><?php esc_html_e('This will display the term name as a link with hover tooltip.', 'advanced-glossary'); ?></p>
                 
-                <p style="margin-top: 15px;"><strong>With custom text:</strong></p>
+                <p style="margin-top: 15px;"><strong><?php esc_html_e('With custom text:', 'advanced-glossary'); ?></strong></p>
                 <code>[glossary term="Your Term Name"]Click here for definition[/glossary]</code>
-                <p class="description">This will display "Click here for definition" as the link text.</p>
+                <p class="description"><?php esc_html_e('This will display "Click here for definition" as the link text.', 'advanced-glossary'); ?></p>
                 
-                <p style="margin-top: 15px;"><strong>Using term ID:</strong></p>
+                <p style="margin-top: 15px;"><strong><?php esc_html_e('Using term ID:', 'advanced-glossary'); ?></strong></p>
                 <code>[glossary id="123"]</code>
-                <p class="description">Use the term ID instead of the name for better reliability.</p>
+                <p class="description"><?php esc_html_e('Use the term ID instead of the name for better reliability.', 'advanced-glossary'); ?></p>
             </div>
         </div>
         <?php
@@ -116,4 +122,4 @@ class Glossary_Shortcode_Generator {
 }
 
 // Initialize shortcode generator
-Glossary_Shortcode_Generator::init();
+Advgls_Shortcode_Generator::init();

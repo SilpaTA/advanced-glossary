@@ -1,9 +1,9 @@
 (function () {
-    tinymce.PluginManager.add('glossary_button', function (editor, url) {
+    tinymce.PluginManager.add('advgls_button', function (editor, url) {
 
         // Add button for TinyMCE 5+
         if (editor.ui && editor.ui.registry) {
-            editor.ui.registry.addButton('glossary_button', {
+            editor.ui.registry.addButton('advgls_button', {
                 icon: 'dashicons-book-alt',
                 tooltip: 'Convert to Glossary Term',
                 onAction: function () {
@@ -12,7 +12,7 @@
             });
         } else {
             // Fallback for TinyMCE 4
-            editor.addButton('glossary_button', {
+            editor.addButton('advgls_button', {
                 icon: 'dashicons-book-alt',
                 tooltip: 'Convert to Glossary Term',
                 onclick: function () {
@@ -25,7 +25,7 @@
         editor.on('BeforeSetContent', function (e) {
             if (e.content && e.content.indexOf('[glossary') !== -1) {
                 e.content = e.content.replace(/\[glossary id="(\d+)"\](.*?)\[\/glossary\]/g, function (match, id, text) {
-                    return '<span class="glossary-term glossary-highlight" data-term-id="' + id + '" style="color:#2271b1; text-decoration:underline dotted; text-decoration-thickness:2px; cursor:help; position:relative; transition:color 0.2s ease;">' + text + '</span>';
+                    return '<span class="advgls-term advgls-highlight" data-term-id="' + id + '" style="color:#2271b1; text-decoration:underline dotted; text-decoration-thickness:2px; cursor:help; position:relative; transition:color 0.2s ease;">' + text + '</span>';
                 });
             }
         });
@@ -33,7 +33,7 @@
         // Convert span back to shortcode when saving
         editor.on('PostProcess', function (e) {
             if (e.get) {
-                e.content = e.content.replace(/<span[^>]*class="[^"]*glossary-term[^"]*"[^>]*data-term-id="(\d+)"[^>]*>(.*?)<\/span>/g, function (match, id, text) {
+                e.content = e.content.replace(/<span[^>]*class="[^"]*advgls-term[^"]*"[^>]*data-term-id="(\d+)"[^>]*>(.*?)<\/span>/g, function (match, id, text) {
                     return '[glossary id="' + id + '"]' + text + '[/glossary]';
                 });
             }
@@ -42,7 +42,7 @@
         // Also convert when switching to text mode
         editor.on('GetContent', function (e) {
             if (e.format === 'raw' || e.format === 'html') {
-                e.content = e.content.replace(/<span[^>]*class="[^"]*glossary-term[^"]*"[^>]*data-term-id="(\d+)"[^>]*>(.*?)<\/span>/g, function (match, id, text) {
+                e.content = e.content.replace(/<span[^>]*class="[^"]*advgls-term[^"]*"[^>]*data-term-id="(\d+)"[^>]*>(.*?)<\/span>/g, function (match, id, text) {
                     return '[glossary id="' + id + '"]' + text + '[/glossary]';
                 });
             }
@@ -61,7 +61,7 @@
             var selectedText = editor.selection.getContent({ format: 'text' }).trim();
 
             if (!selectedText) {
-                alert('Please select some text in the editor to link to a glossary term.');
+                alert(glossaryAdmin.select_text || 'Please select some text in the editor to link to a glossary term.');
                 return;
             }
 
@@ -76,18 +76,18 @@
                     if (response.success) {
                         showTermSelectionDialog(response.data, selectedText);
                     } else {
-                        alert('Failed to load glossary terms');
+                        alert(glossaryAdmin.load_error || 'Failed to load glossary terms');
                     }
                 },
                 error: function () {
-                    alert('Error loading glossary terms');
+                    alert(glossaryAdmin.error_loading || 'Error loading glossary terms');
                 }
             });
         }
 
         function showTermSelectionDialog(terms, selectedText) {
             if (!terms || terms.length === 0) {
-                alert('No glossary terms available. Please create some glossary terms first.');
+                alert(glossaryAdmin.no_terms || 'No glossary terms available. Please create some glossary terms first.');
                 return;
             }
 
@@ -185,7 +185,7 @@
             var keepText = data.keepText !== false;
 
             if (!termId) {
-                alert('Please select a glossary term');
+                alert(glossaryAdmin.select_term || 'Please select a glossary term');
                 return;
             }
 
@@ -194,7 +194,7 @@
             });
 
             if (!selectedTerm) {
-                alert('Selected term not found');
+                alert(glossaryAdmin.term_not_found || 'Selected term not found');
                 return;
             }
 

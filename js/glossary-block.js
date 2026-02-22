@@ -4,7 +4,7 @@
     const { useEffect, useState } = wp.element;
     const { RichText } = wp.blockEditor;
 
-    registerBlockType('advanced-glossary/term', {
+    registerBlockType('advgls/term', {
         title: 'Glossary Term',
         icon: 'book',
         category: 'text',
@@ -108,7 +108,7 @@
                     },
                     wp.element.createElement('strong', {}, 'Preview: '),
                     wp.element.createElement('span', {
-                        className: 'glossary-term',
+                        className: 'advgls-term',
                         style: {
                             color: '#2271b1',
                             textDecoration: 'underline dotted',

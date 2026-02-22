@@ -5,7 +5,7 @@ jQuery(document).ready(function($) {
     // Create tooltip element
     function createTooltip() {
         if (!tooltip) {
-            tooltip = $('<div class="glossary-tooltip"><div class="glossary-tooltip-inner"><div class="glossary-tooltip-title"></div><div class="glossary-tooltip-content"></div></div></div>');
+            tooltip = $('<div class="advgls-tooltip"><div class="advgls-tooltip-inner"><div class="advgls-tooltip-title"></div><div class="advgls-tooltip-content"></div></div></div>');
             $('body').append(tooltip);
         }
         return tooltip;
@@ -24,9 +24,9 @@ jQuery(document).ready(function($) {
         $tooltip.addClass('loading').removeClass('show');
         
         // Clear previous content but keep structure
-        $tooltip.find('.glossary-tooltip-title').text('');
-        $tooltip.find('.glossary-tooltip-content').text('Loading...');
-        $tooltip.find('.glossary-tooltip-link').attr('href', '#').hide();
+        $tooltip.find('.advgls-tooltip-title').text('');
+        $tooltip.find('.advgls-tooltip-content').text(glossaryAjax.loading_text || 'Loading...');
+        $tooltip.find('.advgls-tooltip-link').attr('href', '#').hide();
         
         // Position tooltip immediately so loading state is visible
         positionTooltip(element);
@@ -46,9 +46,9 @@ jQuery(document).ready(function($) {
                     const data = response.data;
                     
                     // Update content
-                    $tooltip.find('.glossary-tooltip-title').text(data.title);
-                    $tooltip.find('.glossary-tooltip-content').text(data.description);
-                    $tooltip.find('.glossary-tooltip-link').attr('href', data.link).show();
+                    $tooltip.find('.advgls-tooltip-title').text(data.title);
+                    $tooltip.find('.advgls-tooltip-content').text(data.description);
+                    $tooltip.find('.advgls-tooltip-link').attr('href', data.link).show();
                     
                     // Reposition in case content changed size
                     setTimeout(function() {
@@ -59,7 +59,7 @@ jQuery(document).ready(function($) {
             },
             error: function(xhr, status, error) {
                 $tooltip.removeClass('loading');
-                $tooltip.find('.glossary-tooltip-content').text('Error loading definition');
+                $tooltip.find('.advgls-tooltip-content').text(glossaryAjax.error_text || 'Error loading definition');
             }
         });
     }
@@ -124,24 +124,24 @@ jQuery(document).ready(function($) {
     }
     
     // Event handlers
-    $(document).on('mouseenter', '.glossary-term', function() {
+    $(document).on('mouseenter', '.advgls-term', function() {
         const termId = $(this).data('term-id');
         if (termId) {
             showTooltip(this, termId);
         }
     });
     
-    $(document).on('mouseleave', '.glossary-term', function() {
+    $(document).on('mouseleave', '.advgls-term', function() {
         setTimeout(function() {
-            if (!$('.glossary-tooltip:hover').length && !$('.glossary-term:hover').length) {
+            if (!$('.advgls-tooltip:hover').length && !$('.advgls-term:hover').length) {
                 hideTooltip();
             }
         }, 100);
     });
     
-    $(document).on('mouseleave', '.glossary-tooltip', function() {
+    $(document).on('mouseleave', '.advgls-tooltip', function() {
         setTimeout(function() {
-            if (!$('.glossary-term:hover').length) {
+            if (!$('.advgls-term:hover').length) {
                 hideTooltip();
             }
         }, 100);
@@ -153,7 +153,7 @@ jQuery(document).ready(function($) {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(function() {
             if (tooltip && tooltip.hasClass('show')) {
-                const hoveredTerm = $('.glossary-term:hover');
+                const hoveredTerm = $('.advgls-term:hover');
                 if (hoveredTerm.length) {
                     positionTooltip(hoveredTerm[0]);
                 }

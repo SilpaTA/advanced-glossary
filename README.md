@@ -146,7 +146,7 @@ Edit `css/glossary-style.css` to customize:
 - Positioning
 
 #### Changing Link Appearance
-Modify the `.glossary-term` CSS class to change:
+Modify the `.advgls-term` CSS class to change:
 - Text color
 - Underline style
 - Hover effects
@@ -174,7 +174,7 @@ Or use the **Custom CSS** option in **Glossary → Settings** to add your own st
 ### Manual Term Insertion in HTML
 You can manually add glossary terms in HTML mode:
 ```html
-<span class="glossary-term" data-term-id="123">Your Term</span>
+<span class="advgls-term" data-term-id="123">Your Term</span>
 ```
 
 ### Disable Auto-linking for Specific Posts
@@ -223,7 +223,7 @@ do_action('glossary_settings_update', $settings);
 - Check if case-sensitive matching is affecting results
 
 ### Gutenberg Block Not Showing
-- Ensure you're using WordPress 5.0 or higher
+- Ensure you're using WordPress 6.4 or higher
 - Try regenerating your permalinks (Settings → Permalinks → Save)
 - Clear block editor cache
 
@@ -234,8 +234,8 @@ do_action('glossary_settings_update', $settings);
 
 ## Requirements
 
-- WordPress 5.0 or higher
-- PHP 7.0 or higher
+- WordPress 6.4 or higher
+- PHP 7.4 or higher (PHP 8.0+ recommended)
 - MySQL 5.6 or higher
 - Modern browser with JavaScript enabled
 
