@@ -49,7 +49,7 @@ class Advgls_Settings {
     public static function render_page() {
         ?>
         <div class="wrap">
-            <h1><?php echo esc_html__('Glossary Settings', 'advanced-glossary'); ?></h1>
+            <h1><?php echo esc_html__( 'Glossary Settings', 'smart-glossary' ); ?></h1>
             <form method="post" action="options.php">
                 <?php
                 settings_fields('advgls_settings_group');
@@ -57,13 +57,13 @@ class Advgls_Settings {
                 ?>
                 <table class="form-table">
                     <tr valign="top">
-                        <th scope="row"><?php esc_html_e('Enable Automatic Linking', 'advanced-glossary'); ?></th>
+                        <th scope="row"><?php esc_html_e( 'Enable Automatic Linking', 'smart-glossary' ); ?></th>
                         <td>
                             <label>
                                 <input type="checkbox" name="advgls_auto_link" value="1" <?php checked(1, get_option('advgls_auto_link', 1)); ?> />
-                                <?php esc_html_e('Automatically link glossary terms in post content', 'advanced-glossary'); ?>
+                                <?php esc_html_e( 'Automatically link glossary terms in post content', 'smart-glossary' ); ?>
                             </label>
-                            <p class="description"><?php esc_html_e('When enabled, glossary terms will be automatically detected and linked in your post and page content.', 'advanced-glossary'); ?></p>
+                            <p class="description"><?php esc_html_e( 'When enabled, glossary terms will be automatically detected and linked in your post and page content.', 'smart-glossary' ); ?></p>
                         </td>
                     </tr>
                 </table>

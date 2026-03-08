@@ -38,7 +38,7 @@ class Advgls_CSV_Importer {
      * Enqueue assets
      */
     public function enqueue_assets($hook) {
-        if (isset($_GET['page']) && $_GET['page'] === 'advgls-import-csv') {
+        if ( isset( $_GET['page'] ) && sanitize_text_field( wp_unslash( $_GET['page'] ) ) === 'advgls-import-csv' ) {
             wp_enqueue_style(
                 'advgls-csv-import',
                 ADVGLS_URL . 'css/advgls-csv-import.css',
@@ -55,34 +55,34 @@ class Advgls_CSV_Importer {
             wp_localize_script('advgls-csv-import', 'advglsCSV', array(
                 'ajax_url' => admin_url('admin-ajax.php'),
                 'nonce' => wp_create_nonce('advgls_csv_import'),
-                'uploading' => __('Uploading...', 'advanced-glossary'),
-                'parsing' => __('Parsing CSV...', 'advanced-glossary'),
-                'importing' => __('Importing terms...', 'advanced-glossary'),
-                'complete' => __('Import complete!', 'advanced-glossary'),
-                'error' => __('An error occurred', 'advanced-glossary'),
-                'total_rows' => __('Total rows:', 'advanced-glossary'),
-                'valid_rows' => __('Valid rows:', 'advanced-glossary'),
-                'invalid_rows' => __('Invalid rows:', 'advanced-glossary'),
-                'row' => __('Row', 'advanced-glossary'),
-                'term' => __('Term', 'advanced-glossary'),
-                'definition' => __('Definition', 'advanced-glossary'),
-                'status' => __('Status', 'advanced-glossary'),
-                'valid' => __('Valid', 'advanced-glossary'),
-                'invalid' => __('Invalid', 'advanced-glossary'),
-                'showing_first_20' => __('Showing first 20 rows', 'advanced-glossary'),
-                'validation_errors' => __('Validation Errors', 'advanced-glossary'),
-                'no_file' => __('No file uploaded', 'advanced-glossary'),
-                'processing' => __('Processing', 'advanced-glossary'),
-                'imported' => __('Imported', 'advanced-glossary'),
-                'updated' => __('Updated', 'advanced-glossary'),
-                'skipped' => __('Skipped', 'advanced-glossary'),
-                'failed' => __('Failed', 'advanced-glossary'),
-                'import_summary' => __('Import Summary', 'advanced-glossary'),
-                'errors' => __('Errors', 'advanced-glossary'),
-                'error' => __('Error', 'advanced-glossary'),
-                'view_glossary' => __('View Glossary Terms', 'advanced-glossary'),
+                'uploading' => __('Uploading...', 'smart-glossary'),
+                'parsing' => __('Parsing CSV...', 'smart-glossary'),
+                'importing' => __('Importing terms...', 'smart-glossary'),
+                'complete' => __('Import complete!', 'smart-glossary'),
+                'error' => __('An error occurred', 'smart-glossary'),
+                'total_rows' => __('Total rows:', 'smart-glossary'),
+                'valid_rows' => __('Valid rows:', 'smart-glossary'),
+                'invalid_rows' => __('Invalid rows:', 'smart-glossary'),
+                'row' => __('Row', 'smart-glossary'),
+                'term' => __('Term', 'smart-glossary'),
+                'definition' => __('Definition', 'smart-glossary'),
+                'status' => __('Status', 'smart-glossary'),
+                'valid' => __('Valid', 'smart-glossary'),
+                'invalid' => __('Invalid', 'smart-glossary'),
+                'showing_first_20' => __('Showing first 20 rows', 'smart-glossary'),
+                'validation_errors' => __('Validation Errors', 'smart-glossary'),
+                'no_file' => __('No file uploaded', 'smart-glossary'),
+                'processing' => __('Processing', 'smart-glossary'),
+                'imported' => __('Imported', 'smart-glossary'),
+                'updated' => __('Updated', 'smart-glossary'),
+                'skipped' => __('Skipped', 'smart-glossary'),
+                'failed' => __('Failed', 'smart-glossary'),
+                'import_summary' => __('Import Summary', 'smart-glossary'),
+                'errors' => __('Errors', 'smart-glossary'),
+                'error' => __('Error', 'smart-glossary'),
+                'view_glossary' => __('View Glossary Terms', 'smart-glossary'),
                 'glossary_url' => admin_url('edit.php?post_type=glossary'),
-                'upload_and_preview' => __('Upload and Preview', 'advanced-glossary'),
+                'upload_and_preview' => __('Upload and Preview', 'smart-glossary'),
             ));
         }
     }
@@ -100,19 +100,19 @@ class Advgls_CSV_Importer {
      */
     private function render_import_page() {
         if (!current_user_can('manage_options')) {
-            wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'advanced-glossary'));
+            wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'smart-glossary'));
         }
         ?>
         <div class="wrap advgls-csv-import-wrap">
-            <h1><?php echo esc_html__('Import Glossary Terms from CSV', 'advanced-glossary'); ?></h1>
+            <h1><?php echo esc_html__('Import Glossary Terms from CSV', 'smart-glossary'); ?></h1>
             
             <div class="advgls-import-container">
                 <!-- Upload Section -->
                 <div class="advgls-upload-section card">
-                    <h2><?php esc_html_e('Step 1: Upload CSV File', 'advanced-glossary'); ?></h2>
+                    <h2><?php esc_html_e('Step 1: Upload CSV File', 'smart-glossary'); ?></h2>
                     <p class="description">
-                        <?php esc_html_e('Upload a CSV file containing glossary terms and their definitions.', 'advanced-glossary'); ?>
-                        <a href="#" id="advgls-download-template" class="button-link"><?php esc_html_e('Download CSV Template', 'advanced-glossary'); ?></a>
+                        <?php esc_html_e('Upload a CSV file containing glossary terms and their definitions.', 'smart-glossary'); ?>
+                        <a href="#" id="advgls-download-template" class="button-link"><?php esc_html_e('Download CSV Template', 'smart-glossary'); ?></a>
                     </p>
                     
                     <form id="advgls-csv-upload-form" method="post" enctype="multipart/form-data">
@@ -120,7 +120,7 @@ class Advgls_CSV_Importer {
                         <table class="form-table">
                             <tr>
                                 <th scope="row">
-                                    <label for="csv_file"><?php esc_html_e('CSV File', 'advanced-glossary'); ?></label>
+                                    <label for="csv_file"><?php esc_html_e('CSV File', 'smart-glossary'); ?></label>
                                 </th>
                                 <td>
                                     <input type="file" id="csv_file" name="csv_file" accept=".csv,.txt" required />
@@ -128,7 +128,7 @@ class Advgls_CSV_Importer {
                                         <?php
                                         printf(
                                             /* translators: %s: Maximum file size */
-                                            esc_html__('Maximum file size: %s', 'advanced-glossary'),
+                                            esc_html__('Maximum file size: %s', 'smart-glossary'),
                                             esc_html( size_format($this->max_file_size) )
                                         );
                                         ?>
@@ -137,20 +137,20 @@ class Advgls_CSV_Importer {
                             </tr>
                             <tr>
                                 <th scope="row">
-                                    <label for="csv_delimiter"><?php esc_html_e('Delimiter', 'advanced-glossary'); ?></label>
+                                    <label for="csv_delimiter"><?php esc_html_e('Delimiter', 'smart-glossary'); ?></label>
                                 </th>
                                 <td>
                                     <select id="csv_delimiter" name="csv_delimiter">
-                                        <option value=","><?php esc_html_e('Comma (,)', 'advanced-glossary'); ?></option>
-                                        <option value=";"><?php esc_html_e('Semicolon (;)', 'advanced-glossary'); ?></option>
-                                        <option value="\t"><?php esc_html_e('Tab', 'advanced-glossary'); ?></option>
+                                        <option value=","><?php esc_html_e('Comma (,)', 'smart-glossary'); ?></option>
+                                        <option value=";"><?php esc_html_e('Semicolon (;)', 'smart-glossary'); ?></option>
+                                        <option value="\t"><?php esc_html_e('Tab', 'smart-glossary'); ?></option>
                                     </select>
                                 </td>
                             </tr>
                         </table>
                         <p class="submit">
                             <button type="submit" class="button button-primary" id="advgls-upload-btn">
-                                <?php esc_html_e('Upload and Preview', 'advanced-glossary'); ?>
+                                <?php esc_html_e('Upload and Preview', 'smart-glossary'); ?>
                             </button>
                         </p>
                     </form>
@@ -158,40 +158,40 @@ class Advgls_CSV_Importer {
                 
                 <!-- Preview Section -->
                 <div class="advgls-preview-section card" id="advgls-preview-section" style="display: none;">
-                    <h2><?php esc_html_e('Step 2: Preview and Configure', 'advanced-glossary'); ?></h2>
+                    <h2><?php esc_html_e('Step 2: Preview and Configure', 'smart-glossary'); ?></h2>
                     <div id="advgls-preview-content"></div>
                     
                     <div class="advgls-import-options">
-                        <h3><?php esc_html_e('Import Options', 'advanced-glossary'); ?></h3>
+                        <h3><?php esc_html_e('Import Options', 'smart-glossary'); ?></h3>
                         <table class="form-table">
                             <tr>
                                 <th scope="row">
-                                    <label for="duplicate_action"><?php esc_html_e('Duplicate Handling', 'advanced-glossary'); ?></label>
+                                    <label for="duplicate_action"><?php esc_html_e('Duplicate Handling', 'smart-glossary'); ?></label>
                                 </th>
                                 <td>
                                     <select id="duplicate_action" name="duplicate_action">
-                                        <option value="skip"><?php esc_html_e('Skip duplicates', 'advanced-glossary'); ?></option>
-                                        <option value="update"><?php esc_html_e('Update duplicates', 'advanced-glossary'); ?></option>
-                                        <option value="create"><?php esc_html_e('Create anyway', 'advanced-glossary'); ?></option>
+                                        <option value="skip"><?php esc_html_e('Skip duplicates', 'smart-glossary'); ?></option>
+                                        <option value="update"><?php esc_html_e('Update duplicates', 'smart-glossary'); ?></option>
+                                        <option value="create"><?php esc_html_e('Create anyway', 'smart-glossary'); ?></option>
                                     </select>
-                                    <p class="description"><?php esc_html_e('How to handle terms that already exist.', 'advanced-glossary'); ?></p>
+                                    <p class="description"><?php esc_html_e('How to handle terms that already exist.', 'smart-glossary'); ?></p>
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row">
-                                    <label for="import_status"><?php esc_html_e('Post Status', 'advanced-glossary'); ?></label>
+                                    <label for="import_status"><?php esc_html_e('Post Status', 'smart-glossary'); ?></label>
                                 </th>
                                 <td>
                                     <select id="import_status" name="import_status">
-                                        <option value="publish"><?php esc_html_e('Published', 'advanced-glossary'); ?></option>
-                                        <option value="draft"><?php esc_html_e('Draft', 'advanced-glossary'); ?></option>
+                                        <option value="publish"><?php esc_html_e('Published', 'smart-glossary'); ?></option>
+                                        <option value="draft"><?php esc_html_e('Draft', 'smart-glossary'); ?></option>
                                     </select>
                                 </td>
                             </tr>
                         </table>
                         <p class="submit">
                             <button type="button" class="button button-primary" id="advgls-start-import-btn">
-                                <?php esc_html_e('Start Import', 'advanced-glossary'); ?>
+                                <?php esc_html_e('Start Import', 'smart-glossary'); ?>
                             </button>
                         </p>
                     </div>
@@ -199,7 +199,7 @@ class Advgls_CSV_Importer {
                 
                 <!-- Progress Section -->
                 <div class="advgls-progress-section card" id="advgls-progress-section" style="display: none;">
-                    <h2><?php esc_html_e('Step 3: Import Progress', 'advanced-glossary'); ?></h2>
+                    <h2><?php esc_html_e('Step 3: Import Progress', 'smart-glossary'); ?></h2>
                     <div class="advgls-progress-bar">
                         <div class="advgls-progress-fill" id="advgls-progress-fill"></div>
                     </div>
@@ -208,30 +208,30 @@ class Advgls_CSV_Importer {
                 
                 <!-- Results Section -->
                 <div class="advgls-results-section card" id="advgls-results-section" style="display: none;">
-                    <h2><?php esc_html_e('Import Results', 'advanced-glossary'); ?></h2>
+                    <h2><?php esc_html_e('Import Results', 'smart-glossary'); ?></h2>
                     <div id="advgls-results-content"></div>
                 </div>
             </div>
             
             <!-- Instructions -->
             <div class="advgls-instructions card">
-                <h2><?php esc_html_e('CSV Format Instructions', 'advanced-glossary'); ?></h2>
-                <p><?php esc_html_e('Your CSV file should have the following structure:', 'advanced-glossary'); ?></p>
+                <h2><?php esc_html_e('CSV Format Instructions', 'smart-glossary'); ?></h2>
+                <p><?php esc_html_e('Your CSV file should have the following structure:', 'smart-glossary'); ?></p>
                 <ul>
-                    <li><strong><?php esc_html_e('Required columns:', 'advanced-glossary'); ?></strong>
+                    <li><strong><?php esc_html_e('Required columns:', 'smart-glossary'); ?></strong>
                         <ul>
-                            <li><code>term</code> <?php esc_html_e('or', 'advanced-glossary'); ?> <code>title</code> - <?php esc_html_e('The glossary term name', 'advanced-glossary'); ?></li>
-                            <li><code>definition</code> <?php esc_html_e('or', 'advanced-glossary'); ?> <code>description</code> - <?php esc_html_e('The tooltip definition', 'advanced-glossary'); ?></li>
+                            <li><code>term</code> <?php esc_html_e('or', 'smart-glossary'); ?> <code>title</code> - <?php esc_html_e('The glossary term name', 'smart-glossary'); ?></li>
+                            <li><code>definition</code> <?php esc_html_e('or', 'smart-glossary'); ?> <code>description</code> - <?php esc_html_e('The tooltip definition', 'smart-glossary'); ?></li>
                         </ul>
                     </li>
-                    <li><strong><?php esc_html_e('Optional columns:', 'advanced-glossary'); ?></strong>
+                    <li><strong><?php esc_html_e('Optional columns:', 'smart-glossary'); ?></strong>
                         <ul>
-                            <li><code>slug</code> - <?php esc_html_e('Custom post slug (auto-generated if not provided)', 'advanced-glossary'); ?></li>
-                            <li><code>status</code> - <?php esc_html_e('Post status: publish or draft (default: publish)', 'advanced-glossary'); ?></li>
+                            <li><code>slug</code> - <?php esc_html_e('Custom post slug (auto-generated if not provided)', 'smart-glossary'); ?></li>
+                            <li><code>status</code> - <?php esc_html_e('Post status: publish or draft (default: publish)', 'smart-glossary'); ?></li>
                         </ul>
                     </li>
                 </ul>
-                <p><strong><?php esc_html_e('Example CSV:', 'advanced-glossary'); ?></strong></p>
+                <p><strong><?php esc_html_e('Example CSV:', 'smart-glossary'); ?></strong></p>
                 <pre><code>term,definition
 "API","Application Programming Interface - a set of protocols"
 "CSS","Cascading Style Sheets - used for styling web pages"
@@ -246,20 +246,20 @@ class Advgls_CSV_Importer {
      */
     private function handle_file_upload() {
         if (!isset($_FILES['csv_file']) || $_FILES['csv_file']['error'] !== UPLOAD_ERR_OK) {
-            return new WP_Error('upload_error', __('File upload failed.', 'advanced-glossary'));
+            return new WP_Error('upload_error', __('File upload failed.', 'smart-glossary'));
         }
         
         $file = $_FILES['csv_file'];
         
         // Check file size
         if ($file['size'] > $this->max_file_size) {
-            return new WP_Error('file_too_large', __('File is too large.', 'advanced-glossary'));
+            return new WP_Error('file_too_large', __('File is too large.', 'smart-glossary'));
         }
         
         // Check file type
         $file_type = wp_check_filetype($file['name']);
         if (!in_array($file_type['ext'], array('csv', 'txt'))) {
-            return new WP_Error('invalid_file_type', __('Invalid file type. Please upload a CSV file.', 'advanced-glossary'));
+            return new WP_Error('invalid_file_type', __('Invalid file type. Please upload a CSV file.', 'smart-glossary'));
         }
         
         // Use WordPress upload handler
@@ -278,7 +278,7 @@ class Advgls_CSV_Importer {
      */
     private function parse_csv_file($file_path, $delimiter = ',') {
         if (!file_exists($file_path)) {
-            return new WP_Error('file_not_found', __('CSV file not found.', 'advanced-glossary'));
+            return new WP_Error('file_not_found', __('CSV file not found.', 'smart-glossary'));
         }
         
         $data = array();
@@ -288,7 +288,7 @@ class Advgls_CSV_Importer {
         // Open file
         $handle = fopen($file_path, 'r');
         if ($handle === false) {
-            return new WP_Error('file_open_error', __('Could not open CSV file.', 'advanced-glossary'));
+            return new WP_Error('file_open_error', __('Could not open CSV file.', 'smart-glossary'));
         }
         
         // Detect encoding and remove BOM if present
@@ -320,7 +320,7 @@ class Advgls_CSV_Importer {
         $header_row = fgetcsv($handle, 0, $delimiter);
         if ($header_row === false) {
             fclose($handle);
-            return new WP_Error('invalid_csv', __('Invalid CSV format.', 'advanced-glossary'));
+            return new WP_Error('invalid_csv', __('Invalid CSV format.', 'smart-glossary'));
         }
         
         // Normalize headers - remove any BOM characters and trim
@@ -337,7 +337,7 @@ class Advgls_CSV_Importer {
         
         if (!$has_term || !$has_definition) {
             fclose($handle);
-            return new WP_Error('missing_columns', __('CSV must contain "term" (or "title") and "definition" (or "description") columns.', 'advanced-glossary'));
+            return new WP_Error('missing_columns', __('CSV must contain "term" (or "title") and "definition" (or "description") columns.', 'smart-glossary'));
         }
         
         // Read data rows
@@ -375,15 +375,15 @@ class Advgls_CSV_Importer {
             // Get term name
             $term = isset($row['term']) ? trim($row['term']) : (isset($row['title']) ? trim($row['title']) : '');
             if (empty($term)) {
-                $row_errors[] = __('Term name is required.', 'advanced-glossary');
+                $row_errors[] = __('Term name is required.', 'smart-glossary');
             } elseif (strlen($term) > 200) {
-                $row_errors[] = __('Term name is too long (max 200 characters).', 'advanced-glossary');
+                $row_errors[] = __('Term name is too long (max 200 characters).', 'smart-glossary');
             }
             
             // Get definition
             $definition = isset($row['definition']) ? trim($row['definition']) : (isset($row['description']) ? trim($row['description']) : '');
             if (empty($definition)) {
-                $row_errors[] = __('Definition is required.', 'advanced-glossary');
+                $row_errors[] = __('Definition is required.', 'smart-glossary');
             }
             
             $row['_valid'] = empty($row_errors);
@@ -434,19 +434,19 @@ class Advgls_CSV_Importer {
         check_ajax_referer('advgls_csv_import', 'nonce');
         
         if (!current_user_can('manage_options')) {
-            wp_send_json_error(__('Insufficient permissions.', 'advanced-glossary'));
+            wp_send_json_error(__('Insufficient permissions.', 'smart-glossary'));
         }
         
         // Verify nonce for upload
         if (!isset($_POST['advgls_csv_upload_nonce']) || !wp_verify_nonce($_POST['advgls_csv_upload_nonce'], 'advgls_csv_upload')) {
-            wp_send_json_error(__('Security check failed.', 'advanced-glossary'));
+            wp_send_json_error(__('Security check failed.', 'smart-glossary'));
         }
         
         $delimiter = isset($_POST['csv_delimiter']) ? sanitize_text_field($_POST['csv_delimiter']) : ',';
         
         // Handle file upload
         if (!isset($_FILES['csv_file']) || $_FILES['csv_file']['error'] !== UPLOAD_ERR_OK) {
-            wp_send_json_error(__('No file uploaded or upload error occurred.', 'advanced-glossary'));
+            wp_send_json_error(__('No file uploaded or upload error occurred.', 'smart-glossary'));
         }
         
         $file_path = $this->handle_file_upload();
@@ -491,7 +491,7 @@ class Advgls_CSV_Importer {
         check_ajax_referer('advgls_csv_import', 'nonce');
         
         if (!current_user_can('manage_options')) {
-            wp_send_json_error(__('Insufficient permissions.', 'advanced-glossary'));
+            wp_send_json_error(__('Insufficient permissions.', 'smart-glossary'));
         }
         
         $upload_key = isset($_POST['upload_key']) ? sanitize_text_field($_POST['upload_key']) : '';
@@ -504,7 +504,7 @@ class Advgls_CSV_Importer {
         $delimiter = get_transient($upload_key . '_delimiter');
         
         if (!$file_path || !file_exists($file_path)) {
-            wp_send_json_error(__('CSV file not found. Please upload again.', 'advanced-glossary'));
+            wp_send_json_error(__('CSV file not found. Please upload again.', 'smart-glossary'));
         }
         
         // Parse CSV (if first batch)
@@ -524,7 +524,7 @@ class Advgls_CSV_Importer {
         $results = get_transient($upload_key . '_results');
         
         if (!$data) {
-            wp_send_json_error(__('Import data not found.', 'advanced-glossary'));
+            wp_send_json_error(__('Import data not found.', 'smart-glossary'));
         }
         
         // Process batch
@@ -609,7 +609,7 @@ class Advgls_CSV_Importer {
                     $results['imported']++;
                 } else {
                     $results['failed']++;
-                    $error_msg = is_wp_error($post_id) ? $post_id->get_error_message() : __('Failed to create post.', 'advanced-glossary');
+                    $error_msg = is_wp_error($post_id) ? $post_id->get_error_message() : __('Failed to create post.', 'smart-glossary');
                     $results['errors'][] = array(
                         'row' => $row['_row_number'],
                         'term' => $term_name,
@@ -641,7 +641,7 @@ class Advgls_CSV_Importer {
         check_ajax_referer('advgls_csv_import', 'nonce');
         
         if (!current_user_can('manage_options')) {
-            wp_die(esc_html__('Insufficient permissions.', 'advanced-glossary'));
+            wp_die(esc_html__('Insufficient permissions.', 'smart-glossary'));
         }
         
         $filename = 'glossary-import-template.csv';

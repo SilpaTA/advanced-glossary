@@ -69,7 +69,7 @@
                 url: ajaxurl,
                 type: 'POST',
                 data: {
-                    action: 'get_glossary_terms',
+                    action: glossaryAdmin.action || 'advgls_get_glossary_terms',
                     nonce: glossaryAdmin.nonce
                 },
                 success: function (response) {

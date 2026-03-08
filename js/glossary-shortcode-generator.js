@@ -9,8 +9,8 @@ jQuery(document).ready(function($) {
             return;
         }
         
-        // Generate shortcode with term ID for better reliability
-        var shortcode = '[glossary id="' + termId + '"]' + term + '[/glossary]';
+        // Generate shortcode with term ID for better reliability (prefixed shortcode)
+        var shortcode = '[advgls_glossary id="' + termId + '"]' + term + '[/advgls_glossary]';
         $('#shortcode_output').val(shortcode);
         
         // Enable the copy button

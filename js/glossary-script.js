@@ -37,7 +37,7 @@ jQuery(document).ready(function($) {
             url: glossaryAjax.ajax_url,
             type: 'POST',
             data: {
-                action: 'get_glossary_definition',
+                action: glossaryAjax.action_def || 'advgls_get_glossary_definition',
                 term_id: termId,
                 nonce: glossaryAjax.nonce
             },
